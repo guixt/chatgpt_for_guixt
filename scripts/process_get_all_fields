@@ -1,0 +1,38 @@
+// Clear variables
+Set   V[k]  0
+Set   V[line]   ""
+clear   text[&V[fieldnames]]
+
+CreateStructure V[field] name value techname row column buttontext buttontooltip
+CreateTable V[fields] include=V[field]
+
+// Read fields and values from current screen
+label  nextfield
+
+Set   V[k]   "&V[k]"  + 1
+
+GetFieldattribute   #[&V[k]]   text=label  techname=techname row=row column=column buttontext=buttontext buttontooltip=buttontooltip
+
+if   q[ok]   // and   V[label]   and   V[techname]
+  Set   V[line]   "&V[label]: &F[&V[techname]]"
+  copytext   fromstring="line"   totext="&V[fieldnames]"    -appendline
+  
+  Set V[myvalues.&V[k]] "&V[label] : " 
+  Set V[myvalues.&V[k]] "&V[myvalues.&V[k]] &F[&V[techname]]" 
+  
+  Set V[&V[label]] "&F[&V[label]]" 
+  
+  set V[field.name]  "&V[label]"
+  set V[field.value]  "&F[&V[techname]]"
+  set V[field.techname]  "&V[techname]"
+  set V[field.row]   "&V[row]"
+  set V[field.column]   "&V[column]"
+  set V[field.buttontext]   "&V[buttontext]"
+  set V[field.buttontooltip]   "&V[buttontooltip]"
+  
+  AppendRow V[field] table=V[fields]
+  
+  goto  nextfield
+endif
+
+return V[fields]
