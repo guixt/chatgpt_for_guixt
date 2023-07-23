@@ -1,0 +1,37 @@
+﻿InputField	(0,90)	"Frage"	(0,110)	size=50	name="myquestion"
+
+Pushbutton	(44,166)	"run javascript"	"?" process="run_chatgpt_javascript.txt" size=(1,42)
+Pushbutton	(1,110)	"ask chatbot"	"?" process="ask_chatgpt.txt"
+
+TextBox	(26.8,165.3)	(43,283.8)	name="myjavascript"
+
+WebView	(4.7,164.9)	(24.8,260.7)	"file://C:\guixt\scripts\html\guixt_and_chatgpt.html"	name="mychatbot_view_va03"	-closeOnHide
+connecthtml name="mychatbot_view_va03" 
+
+TextBox	(6.1,89.9)	(17.5,156.3)	name="chatbotanswer"
+
+
+
+// Clear variables
+Set   V[k]  0
+Set   V[line]   ""
+clear   text[result]
+
+// Read fields and values from current screen
+label  nextfield
+ 
+Set   V[k]   "&V[k]"  + 1
+ 
+GetFieldattribute   #[&V[k]]   text=label  techname=techname
+ 
+if   q[ok]   // and   V[label]   and   V[techname]
+   Set   V[line]   "&V[label]: &F[&V[techname]]"
+   copytext   fromstring="line"   totext="result"    -appendline
+
+   Set V[myvalues.&V[k]] "&V[label] : " 
+   Set V[myvalues.&V[k]] "&V[myvalues.&V[k]] &F[&V[techname]]" 
+
+   Set V[&V[label]] "&F[&V[label]]" 
+
+   goto  nextfield
+endif
