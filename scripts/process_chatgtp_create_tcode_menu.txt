@@ -1,0 +1,7 @@
+﻿Parameter text[newInputScript]
+
+set V[filename] "chatgpt_created_included.txt"
+
+copytext fromtext="newInputScript" tofile="&V[filename]"   -utf8
+
+

@@ -1,0 +1,4 @@
+﻿set text[chatbotanswer] "   <denke nach...>   "
+
+connecthtml name="mychatbot_view"  run="myjavascript"
+return

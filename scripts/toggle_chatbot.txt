@@ -1,0 +1,6 @@
+﻿if V[chatbot=X]
+  clear V[chatbot]
+else
+  
+  set V[chatbot] "X"
+endif

@@ -1,0 +1,2 @@
+﻿connecthtml name="mychatbot_view"  run="myjavascript"
+return
