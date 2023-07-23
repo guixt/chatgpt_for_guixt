@@ -1,0 +1,19 @@
+﻿
+pushbutton (toolbar)  "@OG\QChatbot@Chatbot" "?" process="toggle_chatbot.txt"
+
+if V[chatbot=X]
+  del (0,0) (100,100) 
+  WebView	(15.7,195.4)	(40.9,259.1)	"https://share.synthesys.io/p/4a9c290e-c58d-495f-a74b-cf51a929a7fc" name="synthesys_view" -transparent 
+  
+  WebView	(-1.2,101.9)	(27.8,204)	"file://C:\guixt\scripts\html\guixt_and_chatgpt.html" _
+    name="mychatbot_view"	 -transparent
+  connecthtml name="mychatbot_view" 
+  
+  include "chatgpt_created_included.txt"
+  
+else
+  
+  pos	X[IMAGE_CONTAINER]	X[IMAGE_CONTAINER]	width=102	height=38
+  Image	(-0.5,146.6) (37.8,288.6)	"C:\Users\Pascal\Downloads\periastron_A_computer_screen_combinated_with_flowers_and_plant_a1a15ab0-c079-4772-861a-597f677a81f2.png"	-plain	-nostretch
+  
+endif
