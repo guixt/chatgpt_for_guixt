@@ -1,0 +1,10 @@
+﻿Box (1,1) "Rücksendung/Gutschrift" (20,80)
+InputField (3,3) "Kundenauftragsnummer (Auswahlliste)" (3,20) size=10 Name="Kundenauftragsnummer"
+InputField (5,3) "Artikelnummer" (5,20) size=10 Name="Artikelnummer"
+InputField (7,3) "Rücksende-/Gutschriftsmenge" (7,20) size=10 Name="Menge"
+InputField (9,3) "Grund für die Rücksendung/Gutschrift" (9,20) size=30 Name="Grund"
+InputField (11,3) "Betrag der Gutschrift (optional)" (11,20) size=10 Name="Betrag"
+Pushbutton (13,3) "Rücksendung bearbeiten" "Rücksendung" size=(1,20) process="Rücksendung.txt"
+Pushbutton (15,3) "Gutschrift erstellen" "Gutschrift" size=(1,20) process="Gutschrift.txt"
+Pushbutton (17,3) "Speichern" "Speichern" size=(1,20) process="Speichern.txt"
+Pushbutton (19,3) "Abbrechen" "Abbrechen" size=(1,20) process="Abbrechen.txt"

@@ -1,0 +1,2 @@
+﻿copytext fromfile="chatgpt_created_included.txt" totext="script"
+return "&text[script]"

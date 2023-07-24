@@ -1,3 +1,5 @@
+Parameter savefile
+
 // Clear variables
 Set   V[k]  0
 Set   V[line]   ""
@@ -33,6 +35,12 @@ if   q[ok]   // and   V[label]   and   V[techname]
   AppendRow V[field] table=V[fields]
   
   goto  nextfield
+endif
+
+if V[savefile=X]
+  copytext fromtable="V[fields]" totext="fields_text" -json 
+  copytext fromtext="fields_text"  tofile="guixt_fields_on_screen.txt" 
+
 endif
 
 return V[fields]

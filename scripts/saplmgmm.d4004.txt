@@ -1,0 +1,3 @@
+﻿  WebView	(-1.2,101.9)	(27.8,204)	"file://C:\guixtscripts\chatgpt_for_guixt\html\guixt_and_chatgpt.html" _
+    name="mychatbot_view"	 -transparent
+  connecthtml name="mychatbot_view" 

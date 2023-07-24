@@ -1,0 +1,6 @@
+﻿Parameter new_script
+
+copytext fromstring="new_script" totext="new_script_text" -utf8
+ 
+copytext fromtext="new_script_text" tofile="chatgpt_created_included.txt"  -utf8
+
