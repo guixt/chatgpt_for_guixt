@@ -4,7 +4,7 @@ function guixt_initialize(obj) {
     guixt = obj;
 };
 
-var OPENAI_API_KEY = "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";
+var OPENAI_API_KEY = "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";
 var bTextToSpeechSupported = false;
 var bSpeechInProgress = false;
 var oSpeechRecognizer = null
@@ -72,6 +72,9 @@ function Send() {
     // To save costs. always start without further context
     // historyContext = [];
 
+    // Zeigen Sie die Ladeanzeige an, wenn der Chatbot aktiv ist
+    document.getElementById('loading').style.display = 'block';
+
     var sQuestion = txtMsg.value;
     if (sQuestion == "") {
         alert("Type in your question!");
@@ -87,238 +90,257 @@ function Send() {
     oHttp.setRequestHeader("Authorization", "Bearer " + OPENAI_API_KEY)
 
     oHttp.onreadystatechange = function () {
-        var s = "";
+        try {
 
-        if (oHttp.readyState === 4) {
+            var s = "";
 
-            console.log(oHttp.status);
-            console.log(oHttp.responseText);
-            var oJson = {}
-            if (txtOutput.value != "") txtOutput.value += "\n";
+            if (oHttp.readyState === 4) {
 
-            try {
-                oJson = JSON.parse(oHttp.responseText);
-            } catch (ex) {
-                txtOutput.value += "Error: " + ex.message
-            }
+                console.log(oHttp.status);
+                console.log(oHttp.responseText);
+                var oJson = {}
+                if (txtOutput.value != "") txtOutput.value += "\n";
 
-
-            if (oJson.error && oJson.error.message) {
-                txtOutput.value += "Error: " + oJson.error.message;
+                try {
+                    oJson = JSON.parse(oHttp.responseText);
+                } catch (ex) {
+                    txtOutput.value += "Error: " + ex.message
+                }
 
 
-            }
-            // Sucess        
-
-            // check if GPT wanted to call a function
-            else if (oJson.choices && oJson.choices[0].message.function_call) {
+                if (oJson.error && oJson.error.message) {
+                    txtOutput.value += "Error: " + oJson.error.message;
 
 
-                if (oJson.choices[0].message.function_call) {
+                }
+                // Sucess        
 
-                    var functionToCall = oJson.choices[0].message.function_call.name;
-                    var parameters = JSON.parse(oJson.choices[0].message.function_call.arguments);
-
-                    
-
-                    var functionResponse = "";
+                // check if GPT wanted to call a function
+                else if (oJson.choices && oJson.choices[0].message.function_call) {
 
 
-                    //  s = window[functionToCall](Object.values(parameters)[0]);
-                    if (functionToCall == "guixt_get") {
-                        functionResponse = guixt.get(Object.values(parameters)[0]);
-                    }
+                    if (oJson.choices[0].message.function_call) {
 
-                    if (functionToCall == "guixt_start_transaction") {
-                        //s = guixt.process('subdirectory\\start_transaction', Object.values(parameters)[0]);
-                        functionResponse = "Rufe folgende Transaktion auf: " + Object.values(parameters)[0];
-                        guixt.input("OK:/O" + Object.values(parameters)[0]);
-                    }
-                    if (functionToCall == "guixt_get_all_fields") {
+                        var functionToCall = oJson.choices[0].message.function_call.name;
+                        var parameters = JSON.parse(oJson.choices[0].message.function_call.arguments);
 
-                        var jsonfields = guixt.process('get_all_fields', 'X')
-
-                        // parse address data into JavaScript object
-                        // var fields = JSON.parse(jsonfields);
-                        guixt.set("allfields", jsonfields);
-
-                        // functionResponse += jsonfields;
-                        // Hohe kosten wenn alle Felder an den Chatbot geliefert werde...
-                        // => erstmal nur Antwort
-                        functionResponse = "Felder wurden ermittelt und in GuiXT variable allfields gespeichert"
-
-                    }
-
-                    if (functionToCall == "guixt_check_button_exists") {
-                        if (parameters && Object.values(parameters).length >= 1) {
-
-                            var searchButtonText = Object.values(parameters)[0];
-                            var jsonfields = guixt.process('get_all_fields');
-                            jsonfields = JSON.parse(jsonfields);
-
-                            var foundElement = findButtonWithText(jsonfields,searchButtonText);
-
-                            if (foundElement)
-                            {
-                                functionResponse = "A button with text " + foundElement.buttontext + " was found";
-
-                            }
-                            else
-                            {
-                                functionResponse = "No button was found with text " + searchButtonText;
-                            }
+                        if (oJson.choices[0].message.content) {
+                            s = oJson.choices[0].message.content;
 
 
+                            txtOutput.value += "\nChat GPT: " + s;
+                            // guixt.SetText("chatbotanswer", "Chat GPT: " + s);
+                            TextToSpeech(s);
+                            var ta = document.getElementById("txtOutput");                          
+                            ta.scrollTop = ta.scrollHeight;
+                        }
+
+                        // Hide processing info
+                        document.getElementById('loading').style.display = 'none';
+
+                        var functionResponse = "";
+
+
+                        //  s = window[functionToCall](Object.values(parameters)[0]);
+                        if (functionToCall == "guixt_get") {
+                            functionResponse = guixt.get(Object.values(parameters)[0]);
+                        }
+
+                        if (functionToCall == "guixt_start_transaction") {
+                            //s = guixt.process('subdirectory\\start_transaction', Object.values(parameters)[0]);
+                            functionResponse = "Rufe folgende Transaktion auf: " + Object.values(parameters)[0];
+                            guixt.input("OK:/O" + Object.values(parameters)[0]);
+                        }
+                        if (functionToCall == "guixt_get_all_fields") {
+
+                            var jsonfields = guixt.process('get_all_fields', 'X')
+
+                            // parse address data into JavaScript object
+                            // var fields = JSON.parse(jsonfields);
+                            guixt.set("allfields", jsonfields);
+
+                            // functionResponse += jsonfields;
+                            // Hohe kosten wenn alle Felder an den Chatbot geliefert werde...
+                            // => erstmal nur Antwort
+                            functionResponse = "Felder wurden ermittelt und in GuiXT variable allfields gespeichert"
 
                         }
-                    }
 
-                    if (functionToCall == "guixt_get_current_script")
-                    {
+                        if (functionToCall == "guixt_check_button_exists") {
+                            if (parameters && Object.values(parameters).length >= 1) {
+
+                                var searchButtonText = Object.values(parameters)[0];
+                                var jsonfields = guixt.process('get_all_fields');
+                                jsonfields = JSON.parse(jsonfields);
+
+                                var foundElement = findButtonWithText(jsonfields, searchButtonText);
+
+                                if (foundElement) {
+                                    functionResponse = "A button with text " + foundElement.buttontext + " was found";
+
+                                }
+                                else {
+                                    functionResponse = "No button was found with text " + searchButtonText;
+                                }
+
+
+
+                            }
+                        }
+
+                        if (functionToCall == "guixt_get_current_script") {
                             var script = guixt.process('get_current_script');
                             functionResponse = script;
 
 
-                    }
+                        }
 
-                    if (functionToCall == "guixt_save_script")
-                    {
-                        if (parameters) {
+                        if (functionToCall == "guixt_save_script") {
+                            if (parameters) {
 
-                           
 
-                            // Jetzt können Sie auf das "scriptcontent"-Attribut zugreifen:
-                            var scriptcontent = parameters.scriptcontent;
 
-                            guixt.process('set_current_script', scriptcontent);
-                            guixt.input("OK");
+                                // Jetzt können Sie auf das "scriptcontent"-Attribut zugreifen:
+                                var scriptcontent = parameters.scriptcontent;
 
-                            functionResponse = "The guixt script was written and activated";
+                                guixt.process('set_current_script', scriptcontent);
+                                guixt.input("OK");
+
+                                functionResponse = "The guixt script was written and activated";
+
+                            }
 
                         }
 
-                    }
-                   
 
 
 
-                    if (functionToCall == "guixt_info_create_pushbutton")
-                    {
-                        functionResponse = "Example: Pushbutton  (row,column)  \"Text on button\" \"Functioncode\"  size=(rows,columns) process=\"Name of an inputscript.txt\"";
-                    }
-
-                    
-                    if (functionToCall == "guixt_info_create_inputfield")
-                    {
-                        functionResponse = "Example: InputField (RowStart,ColumnStart) \"Text for inputfield\" (RowEnd,columnEnd) size=\"size of input value\" Name=\"Name of guixt variable\" ";
-                    }
-
-                           
-                    if (functionToCall == "guixt_info_create_box")
-                    {
-                        functionResponse = "Example: Box (RowStart,ColumnStart) (RowEnd,columnEnd) \"Title of the box\"";
-                    }
-
-                    
-
-                    if (functionToCall == "guixt_create_transaction_menu") {
-
-                        if (parameters && Object.values(parameters).length >= 2) {
-                            var tcodes = Object.values(parameters)[0].split("@");
-                            var tcodes_desc = Object.values(parameters)[1].split("@");
-                            var newInputScript = "";
-
-                            var text = [];
-
-                            var boxHeight = 3 * tcodes.length + 5;
-                            text.push("Box\t(0,2)\t(" + boxHeight + ",100)\t\"Chat GTP Transaktionsmenü\"");
+                        if (functionToCall == "guixt_info_create_pushbutton") {
+                            functionResponse = "Example: Pushbutton  (row,column)  \"Text on button\" \"Functioncode\"  size=(rows,columns) process=\"Name of an inputscript.txt\"";
+                        }
 
 
-
-                            tcodes.forEach((tcode, index) => {
-
-                                // Generate GuiXT Script
-
-                                newInputScript += tcode + ": " + tcodes_desc[index] + "\n";
-
-                                text.push("Image\t(1.5,5) (4,65)\t\"white.res\"  -plain -transparent  textstring=\"" + tcodes_desc[index] + "\" textheight=23 textweight=4 textfont=\"Arial Unicode MS\" textcolor=\"RGB(15,122,210)\"");
-
-                                text.push("Pushbutton\t(2,66)\t\"" + tcode + "\"\t\"/n" + tcode + "\" size=(2,14)");
-                                text.push("Pushbutton\t(2,83)\t\"/O" + tcode + "\"\t\"/O" + tcode + "\" size=(2,14)");
-                                text.push("offset (" + (3 * (index + 1)).toString() + ",0)");
-                            });
+                        if (functionToCall == "guixt_info_create_inputfield") {
+                            functionResponse = "Example: InputField (RowStart,ColumnStart) \"Text for inputfield\" (RowEnd,columnEnd) size=\"size of input value\" Name=\"Name of guixt variable\" ";
+                        }
 
 
-                            // Um den gesamten Text als einen String zu bekommen, können Sie die join-Methode verwenden:
-                            newInputScript = text.join("\n");
+                        if (functionToCall == "guixt_info_create_box") {
+                            functionResponse = "Example: Box (RowStart,ColumnStart) (RowEnd,columnEnd) \"Title of the box\"";
+                        }
 
-                            guixt.process('chatgtp_create_tcode_menu', newInputScript);
-                            guixt.input("OK");
 
-                            functionResponse = "The menu for the given transactions was created successfully.";
+                        if (functionToCall == "guixt_info_image") {
+                            functionResponse = "Example: Image  (Row1,Column1) (Row2,Column1) \"Path to the image file\" \n"
+                            functionResponse += "// Here (row1,column1) is the upper left corner and (row2,column2) is the lower right corner."
+                        }
+
+
+                        if (functionToCall == "guixt_create_transaction_menu") {
+
+                            if (parameters && Object.values(parameters).length >= 2) {
+                                var tcodes = Object.values(parameters)[0].split("@");
+                                var tcodes_desc = Object.values(parameters)[1].split("@");
+                                var newInputScript = "";
+
+                                var text = [];
+
+                                var boxHeight = 3 * tcodes.length + 5;
+                                text.push("Box\t(0,2)\t(" + boxHeight + ",100)\t\"Chat GTP Transaktionsmenü\"");
+
+
+
+                                tcodes.forEach((tcode, index) => {
+
+                                    // Generate GuiXT Script
+
+                                    newInputScript += tcode + ": " + tcodes_desc[index] + "\n";
+
+                                    text.push("Image\t(1.5,5) (4,65)\t\"white.res\"  -plain -transparent  textstring=\"" + tcodes_desc[index] + "\" textheight=23 textweight=4 textfont=\"Arial Unicode MS\" textcolor=\"RGB(15,122,210)\"");
+
+                                    text.push("Pushbutton\t(2,66)\t\"" + tcode + "\"\t\"/n" + tcode + "\" size=(2,14)");
+                                    text.push("Pushbutton\t(2,83)\t\"/O" + tcode + "\"\t\"/O" + tcode + "\" size=(2,14)");
+                                    text.push("offset (" + (3 * (index + 1)).toString() + ",0)");
+                                });
+
+
+                                // Um den gesamten Text als einen String zu bekommen, können Sie die join-Methode verwenden:
+                                newInputScript = text.join("\n");
+
+                                guixt.process('chatgtp_create_tcode_menu', newInputScript);
+                                guixt.input("OK");
+
+                                functionResponse = "The menu for the given transactions was created successfully.";
+
+                            }
+
+                            else {
+                                functionResponse = "There was an error when trying to create the menu."
+                            }
 
                         }
 
-                        else {
-                            functionResponse = "There was an error when trying to create the menu."
+                        historyContext.push({ role: "function", name: functionToCall, content: functionResponse });
+
+                        var data_2 = {
+                            model: sModel,
+                            messages: historyContext,
+                            functions: functions,
+                            max_tokens: iMaxTokens,
+                            user: sUserId,
+                            temperature: dTemperature,
+                            frequency_penalty: 0.0, //Number between -2.0 and 2.0    
+                            //Positive values decrease the model's likelihood 
+                            //to repeat the same line verbatim.
+                            presence_penalty: 0.0,    //Number between -2.0 and 2.0. 
+                            //Positive values increase the model's likelihood 
+                            //to talk about new topics.
+                            stop: ["#", ";"]        //Up to 4 sequences where the API will stop 
+                            //generating further tokens. The returned text 
+                            //will not contain the stop sequence.
                         }
 
+                        oHttp.open("POST", "https://api.openai.com/v1/chat/completions");
+                        oHttp.setRequestHeader("Accept", "application/json");
+                        oHttp.setRequestHeader("Content-Type", "application/json");
+                        oHttp.setRequestHeader("Authorization", "Bearer " + OPENAI_API_KEY)
+                        oHttp.send(JSON.stringify(data_2));
+
+                        document.getElementById('loading').style.display = 'block';
+
+
                     }
-
-                    historyContext.push({ role: "function", name: functionToCall, content: functionResponse });
-
-                    var data_2 = {
-                        model: sModel,
-                        messages: historyContext,
-                        functions: functions,
-                        max_tokens: iMaxTokens,
-                        user: sUserId,
-                        temperature: dTemperature,
-                        frequency_penalty: 0.0, //Number between -2.0 and 2.0    
-                        //Positive values decrease the model's likelihood 
-                        //to repeat the same line verbatim.
-                        presence_penalty: 0.0,    //Number between -2.0 and 2.0. 
-                        //Positive values increase the model's likelihood 
-                        //to talk about new topics.
-                        stop: ["#", ";"]        //Up to 4 sequences where the API will stop 
-                        //generating further tokens. The returned text 
-                        //will not contain the stop sequence.
-                    }
-
-                    oHttp.open("POST", "https://api.openai.com/v1/chat/completions");
-                    oHttp.setRequestHeader("Accept", "application/json");
-                    oHttp.setRequestHeader("Content-Type", "application/json");
-                    oHttp.setRequestHeader("Authorization", "Bearer " + OPENAI_API_KEY)
-                    oHttp.send(JSON.stringify(data_2));
-
-                    // guixt.SetText("chatbotanswer","Chat GPT: " + s);
-                    // TextToSpeech(s);
-
 
                 }
+                // Normal answer from chat gpt
+                else if (oJson.choices && oJson.choices[0].message.content && oJson.choices[0].message) {
 
-            }
-            // Normal answer from chat gpt
-            else if (oJson.choices && oJson.choices[0].message.content && oJson.choices[0].message) {
+                    // Add message to history contect
+                    historyContext.push(oJson.choices[0].message);
 
-                // Add message to history contect
-                historyContext.push(oJson.choices[0].message);
+                    s = oJson.choices[0].message.content;
 
-                s = oJson.choices[0].message.content;
+                    if (s == "") s = "No response";
+                    txtOutput.value += "\nChat GPT: " + s;
+                    guixt.SetText("chatbotanswer", "Chat GPT: " + s);
+                    TextToSpeech(s);
+                    var ta = document.getElementById("txtOutput");                          
+                    ta.scrollTop = ta.scrollHeight;
 
-                if (selLang.value != "en-US") {
-                    var a = s.split("?\n");
-                    if (a.length == 2) {
-                        s = a[1];
-                    }
+                    // Hide processing info
+                    document.getElementById('loading').style.display = 'none';
+
                 }
-
-                if (s == "") s = "No response";
-                txtOutput.value += "Chat GPT: " + s;
-                guixt.SetText("chatbotanswer", "Chat GPT: " + s);
-                TextToSpeech(s);
             }
+
+        } catch (error) {
+            // Verstecken Sie die Ladeanzeige, wenn ein Fehler auftritt
+            document.getElementById('loading').style.display = 'none';
+
+            // Loggen Sie den Fehler oder zeigen Sie eine Fehlermeldung an
+            txtOutput.value += "\n" + error;
         }
+
     };
 
     var sModel = selModel.value;
@@ -420,7 +442,7 @@ function Send() {
                     },
                 },
             }
-        },        
+        },
         {
             "name": "guixt_info_create_pushbutton",
             "description": "Gets information on how to create a pushbutton with guixt",
@@ -445,8 +467,17 @@ function Send() {
                 "properties": {},
             }
         },
+        {
+            "name": "guixt_info_image",
+            "description": "Embed an image in a SAP screen with GuiXT",
+            "parameters": {
+                "type": "object",
+                "properties": {},
+            }
+        },
 
-       
+
+
 
 
 
@@ -477,8 +508,10 @@ function Send() {
     oHttp.send(JSON.stringify(data));
 
     if (txtOutput.value != "") txtOutput.value += "\n";
-    txtOutput.value += "Me: " + sQuestion;
+    txtOutput.value += "\nDu: " + sQuestion;
     txtMsg.value = "";
+    var ta = document.getElementById("txtOutput");                          
+    ta.scrollTop = ta.scrollHeight;
 }
 
 function TextToSpeech(s) {
@@ -585,9 +618,9 @@ function SpeechToText() {
 function findButtonWithText(jsonData, targetName) {
     const fuzzySearchThreshold = 0.85; // Adjust this threshold for fuzzy search sensitivity
 
-    for(let i = 0; i < jsonData.length; i++) {
+    for (let i = 0; i < jsonData.length; i++) {
 
-       if (jsonData[i].buttontext && typeof jsonData[i].buttontext === "string") {
+        if (jsonData[i].buttontext && typeof jsonData[i].buttontext === "string") {
             // Perform a fuzzy search using Levenshtein distance
             const tooltipName = jsonData[i].buttontext.toLowerCase();
             const searchName = targetName.toLowerCase();

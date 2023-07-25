@@ -22,8 +22,10 @@
         <div id="idText"></div>
 
         <div class="controls">
-            <button type="button" onclick="Send()" id="btnSend">Send</button>
-
+            <button type="button" style="height:60px;" onclick="Send()" id="btnSend">Send</button>
+            <div id="loading" style="display:none;;">
+                <div class="loader"></div>
+              </div>
             <div class="checkboxes" style="width:346px;">
 
 
@@ -33,7 +35,7 @@
 
                 <br>
 
-                <button type="button" style="background-color:#FF9999" onclick="reset()" id="btnReset">New
+                <button type="button" style="height:60px;background-color:#FF9999" onclick="reset()" id="btnReset">New
                     conversation</button>
             </div>
 

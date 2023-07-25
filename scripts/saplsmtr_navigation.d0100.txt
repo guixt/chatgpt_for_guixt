@@ -9,7 +9,7 @@ if V[chatbot=X]
 
   // WebView	(15.7,195.4)	(40.9,259.1)	"https://share.synthesys.io/p/b60ad448-aab1-4b88-95e3-c5e21a536d9c" name="synthesys_view" -transparent 
   
-  WebView	(-1.2,101.9)	(27.8,204)	"file://C:\guixtscripts\chatgpt_for_guixt\html\guixt_and_chatgpt.html" _
+  WebView	(-0.6,165.5)	(31.4,268.5)	"file://C:\guixtscripts\chatgpt_for_guixt\html\guixt_and_chatgpt.html" _
     name="mychatbot_view"	 -transparent
   connecthtml name="mychatbot_view" 
   
