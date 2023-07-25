@@ -4,7 +4,7 @@ function guixt_initialize(obj) {
     guixt = obj;
 };
 
-var OPENAI_API_KEY = "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";
+var OPENAI_API_KEY = "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";
 var bTextToSpeechSupported = false;
 var bSpeechInProgress = false;
 var oSpeechRecognizer = null
@@ -231,10 +231,17 @@ function Send() {
 
 
                         if (functionToCall == "guixt_info_image") {
-                            functionResponse = "Example: Image  (Row1,Column1) (Row2,Column1) \"Path to the image file\" \n"
-                            functionResponse += "// Here (row1,column1) is the upper left corner and (row2,column2) is the lower right corner."
+                            functionResponse = "Example: Image  (Row1,Column1) (Row2,Column1) \"Path to the image file\" \n";
+                            functionResponse += "// Here (row1,column1) is the upper left corner and (row2,column2) is the lower right corner.";
                         }
 
+                        
+                        if (functionToCall == "guixt_info_embed_website") {
+                            functionResponse = "Example: WebView (row1,column1) (row2,column2) \"URL\" name=\"webviewname\" \n";
+                            functionResponse += "// Here (row1,column1) is the upper left corner and (row2,column2) is the lower right corner.";
+                        }
+
+                     
 
                         if (functionToCall == "guixt_create_transaction_menu") {
 
@@ -475,6 +482,16 @@ function Send() {
                 "properties": {},
             }
         },
+        {
+            "name": "guixt_info_embed_website",
+            "description": "Embed a website or web application into the sap screen with guixt",
+            "parameters": {
+                "type": "object",
+                "properties": {},
+            }
+        },
+
+
 
 
 

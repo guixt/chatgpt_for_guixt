@@ -1,26 +1,4 @@
-﻿Box (0,1) (6,26) "Materialien"
-Image (1.6,1) (5.3,15) "https://cdn.pixabay.com/photo/2016/06/13/15/07/presentation-1454403_1280.png"
-
-Pushbutton (2,16) "Berlin" "/NSA38" process="matverzeichnis1.txt" size=(2,10)
-  using WERK = "1000"
-
-Pushbutton (4,16) "München" "/NSA38" process="matverzeichnis1.txt" size=(2,10)
-  using WERK =   "3000"
-
-Box (8,1) (14,26) "Materialien"
-Image (9.6,1) (13.3,15) "https://cdn.pixabay.com/photo/2016/06/13/15/07/presentation-1454403_1280.png"
-
-Pushbutton (10,16) "Berlin" "/NSA38" process="matverzeichnis1.txt" size=(2,10)
-  using WERK = "1000"
-
-Pushbutton (12,16) "München" "/NSA38" process="matverzeichnis1.txt" size=(2,10)
-  using WERK =   "3000"
-
-Box (16,1) (22,26) "Materialien"
-Image (17.6,1) (21.3,15) "https://cdn.pixabay.com/photo/2016/06/13/15/07/presentation-1454403_1280.png"
-
-Pushbutton (18,16) "Berlin" "/NSA38" process="matverzeichnis1.txt" size=(2,10)
-  using WERK = "1000"
-
-Pushbutton (20,16) "München" "/NSA38" process="matverzeichnis1.txt" size=(2,10)
-  using WERK =   "3000"
+﻿inputfield(1, 1, 20, 4, 'https://www.google.com')
+inputfield(1, 21, 40, 4, 'https://www.amazon.com')
+inputfield(5, 1, 20, 4, 'https://www.microsoft.com')
+inputfield(5, 21, 40, 4, 'https://www.apple.com')
