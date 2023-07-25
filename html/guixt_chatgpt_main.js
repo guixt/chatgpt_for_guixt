@@ -1,17 +1,17 @@
 var guixt;
-
-function guixt_initialize(obj) {
-    guixt = obj;
-};
-
-var OPENAI_API_KEY = "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";
+var OPENAI_API_KEY = "";
 var bTextToSpeechSupported = false;
 var bSpeechInProgress = false;
 var oSpeechRecognizer = null
 var oSpeechSynthesisUtterance = null;
 var oVoices = null;
-
 var historyContext = [];
+
+function guixt_initialize(obj) {
+    guixt = obj;
+    OPENAI_API_KEY = guixt.get("openai_api_key");
+};
+
 
 
 function OnLoad() {
